@@ -10,17 +10,17 @@ const getAllRepairRequests = async (req, res) => {
     const repairRequests = await RepairRequest.find().lean();
 
     //if no repair requests
-    if (!repairRequests?.length) {
+    if (!repairRequests) {
         return res.status(400).json({ message: 'No repair requests'});
     }
 
     //Add customer username to each repair request before sending the responce
-    const repairRequestsWithUsers = await Promise.all(repairRequests.map(async (request) => {
+    const repairRequestsWithUsers = repairRequests?.length ? await Promise.all(repairRequests.map(async (request) => {
         const customer = await Customer.findById(request.customer).lean().exec();
         const customerUser = await User.findById(customer.user).lean().exec();
 
         return { ...request, customer: customerUser.username};
-    }))
+    })) : repairRequests;
 
     res.json(repairRequestsWithUsers);
 }

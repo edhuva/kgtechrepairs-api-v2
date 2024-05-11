@@ -10,15 +10,15 @@ const getAllCustomers = async (req, res) => {
     const customers = await Customer.find().select('-password').lean();
 
     //if no customer
-    if(!customers?.length) {
+    if(!customers) {
         return res.status(400).json({ message: 'No customer found'})
     }
 
     //Add username to each customer before sending the response
-    const customersWithUsers = await Promise.all(customers.map(async (customer) => {
+    const customersWithUsers =customers?.length ? await Promise.all(customers.map(async (customer) => {
         const user = await User.findById(customer.user).lean().exec()
         return { ...customer, user: user.username, userid: user._id};
-    }))  
+    })) : customers
 
     res.json(customersWithUsers);
 }

@@ -6,12 +6,11 @@ const Invoice = require('../models/Invoice');
 const getAllInvoices = async (req, res) => {
     // Get all invoices from mongoDB
     const invoices = await Invoice.find().lean();
-
-    //if no invoices
-    if (!invoices?.length) {
-        return res.status(400).json({ messaage: 'No invoices found' });
+    //if no employees
+    if(!invoices) {
+        return res.status(400).json({ message: 'No invoice found'});
     }
-
+    
     res.json(invoices);
 }
 
@@ -30,7 +29,7 @@ const createNewInvoice = async (req, res) => {
     const duplicate = await Invoice.findOne({ repairOrderId }).lean().exec();
 
     if (duplicate) {
-        return res.status(409).json({ messaage: 'Duplicate repair order invoice' });
+        return res.status(409).json({ message: 'Duplicate repair order invoice' });
     }
 
     //create and store the new invoice

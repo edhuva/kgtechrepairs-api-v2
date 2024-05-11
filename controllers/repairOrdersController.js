@@ -12,12 +12,12 @@ const getAllRepairOrders = async (req, res) => {
     const repairOrders = await RepairOrder.find().lean();
 
     //if no repair orders
-    if (!repairOrders?.length) {
+    if (!repairOrders) {
         return res.status(400).json({ message: 'No repair orders found'});
     }
 
     // Add customer and employee username to each repair order before sending the response
-    const repairOrdersWithUers = await Promise.all(repairOrders.map(async (order) => {
+    const repairOrdersWithUers = repairOrders?.length ? await Promise.all(repairOrders.map(async (order) => {
         const customer = await Customer.findById(order.customer).lean().exec();
         const customerUser = await User.findById(customer.user).lean().exec();
 
@@ -26,7 +26,7 @@ const getAllRepairOrders = async (req, res) => {
         const userAssigned = await User.findById(employeeAssigned.user).lean().exec();
 
         return { ...order, customer: customerUser.username, employeeAssigned: userAssigned.username };
-    }))
+    })) : repairOrders;
     
     res.json(repairOrdersWithUers);
 }
@@ -67,7 +67,7 @@ const updateRepairOrder = async (req, res) => {
 
     //confirm data
     if (!id || !customer || !employeeCreated || !employeeAssigned || !deviceType || !serialNo || !brand || !issueDesc || typeof completed !== 'boolean') {
-        return res.status(400).json({ message: 'all fields are Required'});
+        return res.status(400).json({ message: 'All fields are Required'});
     }
 
     //confirm the note exist

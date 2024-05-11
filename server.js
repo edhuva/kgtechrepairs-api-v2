@@ -35,6 +35,8 @@ app.use('/customers', require('./routes/customerRoutes'));
 app.use('/repairorders', require('./routes/repaireOrderRoutes'));
 app.use('/invoices', require('./routes/invoiceRoutes'));
 app.use('/repairrequests', require('./routes/repairRequestRoutes'));
+app.use('/subscriptions', require('./routes/subscriptionRoutes'));
+app.use('/contacts', require('./routes/contactRoutes'));
 
 app.all('*', (req, res) => {
     res.status(404);

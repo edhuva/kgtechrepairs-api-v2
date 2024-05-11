@@ -12,7 +12,7 @@ const getAllUsers = async (req, res) => {
     //get all users from mongoDB
     const users = await User.find().select('-password').lean();
 
-    if (!users?.length) return res.status(400).json({ message: 'No users found' });
+    if (!users) return res.status(400).json({ message: 'No users found' });
 
     res.json(users);
 }

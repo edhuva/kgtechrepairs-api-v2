@@ -10,15 +10,15 @@ const getAllEmployees = async (req, res) => {
     const employees = await Employee.find().select('-password').lean();
 
     //if no employees
-    if(!employees?.length) {
+    if(!employees) {
         return res.status(400).json({ message: 'No employee found'});
     }
 
     //Add username to each employee before sending the response
-    const employeesWithUsers = await Promise.all(employees.map(async (employee) => {
+    const employeesWithUsers = employees?.length ? await Promise.all(employees.map(async (employee) => {
         const user = await User.findById(employee.user).lean().exec();
         return {...employee, user: user.username, userid: user._id}
-    }))
+    })) : employees
 
     res.json(employeesWithUsers);
 }
@@ -31,7 +31,7 @@ const createNewEmployee = async (req, res) => {
 
     //confirm data
     if (!username || !fullname || !email || !phoneNo || !password) {
-        return res.status(400).json({ messsage: 'All fields are Required!' });
+        return res.status(400).json({ message: 'All fields are Required!' });
     }
 
     //check for duplicates

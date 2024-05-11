@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const loginLimiter = require('../middleware/loginLimiter');
+
 //auth routes
 router.route('/')
     .post(loginLimiter, authController.login)
@@ -11,6 +12,12 @@ router.route('/register')
 
 router.route('/empregister')
     .post(authController.empRegister)
+
+router.route('/subscriptions')
+    .post(authController.createNewSubscription)
+
+router.route('/contacts')
+    .post(authController.createNewContact)
 
 router.route('/refresh')
     .get(authController.refresh)

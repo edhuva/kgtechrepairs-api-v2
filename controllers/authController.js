@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const Customer = require('../models/Customer');
 const Employee = require('../models/Employee');
+const Subscription = require('../models/Subscription');
+const Contact = require('../models/Contact');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -109,7 +111,7 @@ const empRegister = async (req, res) => {
 
     //confirm data
     if (!username || !fullname || !email || !phoneNo || !password) {
-        return res.status(400).json({ messsage: 'All fields are Required!' });
+        return res.status(400).json({ message: 'All fields are Required!' });
     }
 
     //check for duplicates
@@ -189,6 +191,62 @@ const refresh = (req, res) => {
     )
 }
 
+//@desc         Create New Subscription
+//@route        POST
+//@access       Public
+const createNewSubscription = async (req, res) => {
+    const { email } = req.body;
+
+    //confirm data
+    if (!email) {
+        return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    //check for duplicate subscription
+    const duplicate = await Subscription.findOne({ email }).lean().exec();
+
+    if (duplicate) {
+        return res.status(409).json({ message: 'Duplicate email' });
+    }
+
+    //create and store the new subscription
+    const subscription = await Subscription.create({ email });
+
+    if (subscription) {
+        return res.status(201).json({ message: `New subscription with ID '${subscription._id} created` });
+    } else {
+        return res.status(400).json({ message: 'Invalid subscription data recieved' });
+    }
+}
+
+//@desc         Create New Contact
+//@route        POST
+//@access       Public
+const createNewContact = async (req, res) => {
+    const { email, message } = req.body;
+
+    //confirm data
+    if ( !email || !message) {
+        return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    //check for duplicate contact
+    const duplicate = await Contact.findOne({ email }).lean().exec();
+
+    if (duplicate) {
+        return res.status(409).json({ message: 'Duplicate email' });
+    }
+
+    //create and store the new contact
+    const contact = await Contact.create({ email, message });
+
+    if (contact) {
+        return res.status(201).json({ message: `New contact with ID '${contact._id} created` });
+    } else {
+        return res.status(400).json({ message: 'Invalid contact data recieved' });
+    }
+}
+
 // @desc logout
 // @desc POST /auth/logout
 // @access Public - just to clear cookie if exists
@@ -204,5 +262,5 @@ const logout = (req, res) => {
 }
 
 module.exports = {
-    login, register, empRegister, refresh, logout
+    login, register, empRegister, refresh, createNewSubscription, createNewContact, logout
 }
