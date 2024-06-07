@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const loginLimiter = require('../middleware/loginLimiter');
+const multer = require('multer');
+
+//Multer config
+const storage = multer.memoryStorage();
+const upload = multer({storage});
 
 //auth routes
 router.route('/')
@@ -18,6 +23,9 @@ router.route('/subscriptions')
 
 router.route('/contacts')
     .post(authController.createNewContact)
+
+router.route('/images')
+    .post(upload.single('file'), authController.uploadNewImage)
 
 router.route('/refresh')
     .get(authController.refresh)

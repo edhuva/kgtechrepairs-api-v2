@@ -3,8 +3,11 @@ const Customer = require('../models/Customer');
 const Employee = require('../models/Employee');
 const Subscription = require('../models/Subscription');
 const Contact = require('../models/Contact');
+const Image = require('../models/Image');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const AWS = require('aws-sdk');
+const s3Upload = require('../utility/AWS/S3');
 
 //@desc Login
 //@desc POST /auth
@@ -247,6 +250,44 @@ const createNewContact = async (req, res) => {
     }
 }
 
+//@desc         upload New Image
+//@route        POST
+//@access       Public
+const uploadNewImage = async (req, res) => {
+    const file = req.file;
+
+    //confirm data
+    if ( !file) {
+        return res.status(400).json({ message: 'Image required' });
+    }
+
+    //S3 bucket options
+    const bucketOptions = {
+        Bucket: "kgtechawsbucket",
+        Key: file.originalname,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+        ACL: "public-read"
+    };
+
+
+    
+    // Upload image
+    const uploadImage = await s3Upload(bucketOptions);
+    //create and store the new contact
+    const storedImage = await Image.create({ name: uploadImage.key, location: uploadImage.Location });
+    
+    if (!storedImage) {
+        return res.status(400).json({ message: 'failed to stored image' });
+    }
+    
+    if (uploadImage) {
+        return res.status(201).json(uploadImage);
+    } else {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
 // @desc logout
 // @desc POST /auth/logout
 // @access Public - just to clear cookie if exists
@@ -262,5 +303,5 @@ const logout = (req, res) => {
 }
 
 module.exports = {
-    login, register, empRegister, refresh, createNewSubscription, createNewContact, logout
+    login, register, empRegister, refresh, createNewSubscription, createNewContact, uploadNewImage, logout
 }
