@@ -25,7 +25,8 @@ const getAllRepairOrders = async (req, res) => {
 
         const userAssigned = await User.findById(employeeAssigned.user).lean().exec();
 
-        return { ...order, customer: customerUser.username, employeeAssigned: userAssigned.username };
+        return { ...order, customer: customerUser.username,  employeeAssigned: userAssigned.username };
+
     })) : repairOrders;
     
     res.json(repairOrdersWithUers);

@@ -22,7 +22,7 @@ KGTech repair app version 2 - is an application which provides business manageme
 2. MongoDB Atlas - Database
 3. JSON Web Tokens - Security service (access tokens and refresh tokens)
 4. Git and GitHub - Code version control, Store and Sharing code
-5. Render - App Deployement and Hosting
+5. onRender - App Deployement and Hosting
 6. Reactjs - Frontend Framework
 7. Expressjs - Backend Framework
 8. Nodejs - Javascript Runtime Environment
