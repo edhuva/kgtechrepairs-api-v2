@@ -20,6 +20,7 @@ app.use(logger)
 
 //third-party middlewares
 app.use(cors(corsOptions))
+
 app.use(cookieParser());
 
 // buiit-in midlewares
